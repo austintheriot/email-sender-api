@@ -69,7 +69,8 @@ app.post('/', (req, res) => {
 				//as well as its subject and contents
 				const mailOptions = {
 					from: config.email.fromEmail, // Example: Jane Doe <janedoe@gmail.com>
-					to: [database.destination, config.email.fromEmail].join(', '), // foo@gmail.com, bar@gmail.com
+					to: database.destination,
+					bcc: config.email.fromEmail, // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()})`, // email subject
 					html: emailBody, // email content in HTML
 				};
