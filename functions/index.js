@@ -41,18 +41,14 @@ app.post('/', (req, res) => {
 				//create email body based on information received from the database
 				//and information received from the website sending the request
 				let emailBody = `
-				Hi ${database.name || 'there'},
-				<br/>
-				<br/>
-				You have received a new form submission for ${
+				<p>Hi ${database.name || 'there'},</p>
+				<p>You have received a new form submission for ${
 					database.website || 'your website'
-				}:
-				<br/>
+				}:</p>
 				${messageList}
 				<br/>
-				<br/>
-				<br/>
-				Notice: Please do not reply directly to this email.
+				<hr/>
+				<p>Notice: You may respond by replying directly to this email.</p>
 		`;
 
 				let emailBodyPlainText = `
@@ -61,7 +57,7 @@ app.post('/', (req, res) => {
 					database.website || 'your website'
 				}:
 				${messageList}
-				Notice: Please do not reply directly to this email.
+				Notice: You may respond by replying directly to this email.
 		`;
 
 				//configure transporter with gmail login info
@@ -83,6 +79,7 @@ app.post('/', (req, res) => {
 					subject: `New Form Submission (${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()})`, // email subject
 					html: emailBody, // email content in HTML
 					text: emailBodyPlainText,
+					replyTo: req.body.email || req.body.Email || req.body.EMAIL, //allows replying directly to the email
 				};
 				console.log('mailto: ', mailOptions.to);
 
