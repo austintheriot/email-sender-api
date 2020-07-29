@@ -26,7 +26,6 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
 					let messageList = [...Object.keys(req.body)]
 						.filter((key) => !key.match(/_private/gi))
 						.map((key) => {
-							console.log(key, req.body[key]);
 							return `<p>${key}: ${req.body[key]}</p>`;
 						})
 						.join(' ');
