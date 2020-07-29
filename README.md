@@ -9,7 +9,7 @@ This project uses Node.js, Express.js, the Express CORS middleware (to allow cro
 I chose to use Firebase cloud functions (to send emails via HTTP request) because of their generous free tier and ease of set up--unless I'm calling the service over 2,000,000 times a month, it's free. I also chose to use the Firebase Firestore to store my own, personally generated API keys and verify the API key of whatever website is requesting access (to limit unathorized access to the service).
 
 ## Cost: 
-Although Firebase Cloud functions require a the Blaze, pay-as-you-go plan, their free tier is more than generous. Check out their pricing [here](https://firebase.google.com/pricing/).
+Although Firebase Cloud functions require the Blaze, pay-as-you-go plan, their free tier is more than generous. Check out their pricing [here](https://firebase.google.com/pricing/).
 
 
 ## How to Use
@@ -40,6 +40,40 @@ Example:
             measurementId: '..........',
         },
       };
+      
+## API Requests
+This API is designed to handle POST requests using JSON formatting: 
+
+        {
+            "Name":"Firstname Lastname",
+            "Email": "example@email.com",
+            "Message":"Hello, this is an example message.",
+            "Any Other Info": 123456789,
+            "_private": {
+                "key":"enter-your-own-api-key-here"
+            }
+        }
+        
+ The resulting email would look something like this: 
+ 
+     Subject: New Form Submission (7/29/2020, 10:34:52 AM)
+     Body: 
+     Hi [Recipient Name],
+
+     You have received a new form submission for [Recipient's Website]:
+
+     Name: Firstname Lastname
+
+     Email: example@email.com
+
+     Message: Hello, this is an example message.
+     
+     Any Other Info: 123456789
+     
+     -------------------------------------
+
+     Notice: You may respond by replying directly to this email.
+
       
 ## Contact
 Please feel free to reach out to me if you have any comments, suggestions, or requests. 
