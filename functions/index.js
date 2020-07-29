@@ -4,14 +4,19 @@ const admin = require('firebase-admin');
 require('firebase/firestore');
 
 const nodemailer = require('nodemailer');
-const cors = require('cors')({ origin: true });
+
+//initialize Express and allow cross-origin requests
+const express = require('express');
+const cors = require('cors');
+const app = express();
+app.use(cors({ origin: true }));
 
 admin.initializeApp();
 const config = require('./config');
 firebase.initializeApp(config.firebase);
 const db = admin.firestore();
 
-exports.sendEmail = functions.https.onRequest((req, res) => {
+app.post('/', (req, res) => {
 	//first retrieve available API keys from Firebase database
 	return db
 		.collection('keys')
@@ -31,19 +36,19 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
 						.join(' ');
 
 					let emailBody = `
-						Hi ${database.name || 'there'},
-						<br/>
-						<br/>
-						You have received a new form submission for ${
-							database.website || 'your website'
-						}:
-						<br/>
-						${messageList}
-						<br/>
-						<br/>
-						<br/>
-						Notice: Please do not reply directly to this email.
-        `;
+				Hi ${database.name || 'there'},
+				<br/>
+				<br/>
+				You have received a new form submission for ${
+					database.website || 'your website'
+				}:
+				<br/>
+				${messageList}
+				<br/>
+				<br/>
+				<br/>
+				Notice: Please do not reply directly to this email.
+		`;
 
 					let transporter = nodemailer.createTransport({
 						host: 'smtp.gmail.com',
@@ -99,3 +104,5 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
 				.send({ message: error });
 		});
 });
+
+exports.sendEmail = functions.https.onRequest(app);
