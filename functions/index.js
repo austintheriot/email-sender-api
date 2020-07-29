@@ -64,22 +64,38 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
 					// returning result
 					transporter.sendMail(mailOptions, (error, data) => {
 						if (error) {
-							return res.send(error.toString());
+							return res
+								.set('Access-Control-Allow-Origin', '*')
+								.set('Access-Control-Allow-Headers', 'Content-Type')
+								.status(500)
+								.send(error.toString());
 						}
 						data = JSON.stringify(data);
-						return res.status(200).send({
-							message: `Your form was successfully submitted!`,
-							redirect: database.redirect,
-						});
+						return res
+							.set('Access-Control-Allow-Origin', '*')
+							.set('Access-Control-Allow-Headers', 'Content-Type')
+							.status(200)
+							.send({
+								message: `Your form was successfully submitted!`,
+								redirect: database.redirect,
+							});
 					});
 				});
 			} else {
-				return res.status(400).send({
-					error: `Unauthorized Request. Please use the correct key to send an email through this service.`,
-				});
+				return res
+					.set('Access-Control-Allow-Origin', '*')
+					.set('Access-Control-Allow-Headers', 'Content-Type')
+					.status(400)
+					.send({
+						error: `Unauthorized Request. Please use the correct key to send an email through this service.`,
+					});
 			}
 		})
 		.catch((error) => {
-			return res.status(500).send({ message: error });
+			return res
+				.set('Access-Control-Allow-Origin', '*')
+				.set('Access-Control-Allow-Headers', 'Content-Type')
+				.status(500)
+				.send({ message: error });
 		});
 });
