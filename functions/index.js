@@ -5,14 +5,16 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 require('firebase/firestore');
 
-const nodemailer = require('nodemailer');
-
-//initialize Express and allow cross-origin requests
+//initialize Express and cors to allow cross-origin requests
 const express = require('express');
 const cors = require('cors');
 const app = express();
 app.use(cors({ origin: true }));
 
+//initialize node mailing system
+const nodemailer = require('nodemailer');
+
+//initialize firebase app
 admin.initializeApp();
 const config = require('./config');
 firebase.initializeApp(config.firebase);
@@ -36,6 +38,8 @@ app.post('/', (req, res) => {
 					})
 					.join(' ');
 
+				//create email body based on information received from the database
+				//and information received from the website sending the request
 				let emailBody = `
 				Hi ${database.name || 'there'},
 				<br/>
@@ -51,6 +55,7 @@ app.post('/', (req, res) => {
 				Notice: Please do not reply directly to this email.
 		`;
 
+				//configure transporter with gmail login info
 				let transporter = nodemailer.createTransport({
 					host: 'smtp.gmail.com',
 					auth: {
@@ -60,36 +65,43 @@ app.post('/', (req, res) => {
 					},
 				});
 
+				//configure information about who the email is going to, who its from,
+				//as well as its subject and contents
 				const mailOptions = {
-					from: config.email.fromEmail, // Something like: Jane Doe <janedoe@gmail.com>
-					to: database.destination,
+					from: config.email.fromEmail, // Example: Jane Doe <janedoe@gmail.com>
+					to: [database.destination, config.email.fromEmail].join(', '), // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()})`, // email subject
 					html: emailBody, // email content in HTML
 				};
+				console.log('mailto: ', mailOptions.to);
 
-				// returning result
+				//send the email
 				transporter.sendMail(mailOptions, (error, data) => {
 					if (error) {
-						//failed to send mail
+						//if failure to send mail
 						return res.status(500).send(error.toString());
 					}
 					data = JSON.stringify(data);
-					//succeeded at sending mail
+					//if success to send mail
 					return res.status(200).send({
 						message: `Your form was successfully submitted!`,
-						redirect: database.redirect,
+						redirect: database.redirect, //send back redirect url (optional and suppplied by database)
 					});
 				});
 			} else {
 				//bad request (wrong key)
 				return res.status(400).send({
-					error: `Unauthorized Request. Please use the correct key to send an email through this service.`,
+					error: `Bad Request.`,
+					message: `Please use the correct key to send an email through this service.`,
 				});
 			}
 		})
 		.catch((error) => {
 			//else, catch any other errors
-			return res.status(500).send({ message: error });
+			return res.status(500).send({
+				error,
+				message: 'There was a server-side error. Sorry for any inconvenience.',
+			});
 		});
 });
 
