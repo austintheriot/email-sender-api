@@ -55,6 +55,15 @@ app.post('/', (req, res) => {
 				Notice: Please do not reply directly to this email.
 		`;
 
+				let emailBodyPlainText = `
+				Hi ${database.name || 'there'},
+				You have received a new form submission for ${
+					database.website || 'your website'
+				}:
+				${messageList}
+				Notice: Please do not reply directly to this email.
+		`;
+
 				//configure transporter with gmail login info
 				let transporter = nodemailer.createTransport({
 					host: 'smtp.gmail.com',
@@ -73,6 +82,7 @@ app.post('/', (req, res) => {
 					bcc: config.email.fromEmail, // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()})`, // email subject
 					html: emailBody, // email content in HTML
+					text: emailBodyPlainText,
 				};
 				console.log('mailto: ', mailOptions.to);
 
