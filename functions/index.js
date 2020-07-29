@@ -21,12 +21,13 @@ firebase.initializeApp(config.firebase);
 const db = admin.firestore();
 
 app.post('/', (req, res) => {
-	//first retrieve available API keys from Firebase database
+	//first see if API key exists in database
 	return db
 		.collection('keys')
 		.doc(req.body._private.key)
 		.get()
 		.then((doc) => {
+			//retrieve data from returned document (name, website, redirect, etc.)
 			let database = doc.data();
 			if (doc.exists) {
 				//generate message based on request body
