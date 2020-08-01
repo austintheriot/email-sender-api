@@ -90,7 +90,7 @@ exports.contactForm = (req, res) => {
 				<br/>
 				<hr/>
 				<p>Notice: You may respond by replying directly to this email.</p>
-				<p>To opt out of future emails, please let the developer of this service know directly by emailing him at ${
+				<p>To opt out of future emails, please contact the developer of this service directly by emailing him at ${
 					config.email.supportEmail
 				}</p>
 		`;
@@ -102,7 +102,7 @@ exports.contactForm = (req, res) => {
 				}:
 				${messageList}
 				Notice: You may respond by replying directly to this email.
-				To opt out of future emails, please let the developer of this service know directly by emailing him at ${
+				To opt out of future emails, please contact the developer of this service directly by emailing him at ${
 					config.email.supportEmail
 				}
 		`;
@@ -181,7 +181,7 @@ exports.tryItOut = (req, res) => {
 				${messageList}
 				<br/>
 				<hr/>
-				<p>Notice: If you're interested in hiring me, please don't hesitate to contact me using my <a href="https://austintheriot.com/contact">real contact form</a>.</p>
+				<p>Notice: If you're interested in hiring me, please don't hesitate to contact me using my <a href="${config.email.contactForm}">real contact form</a> or directly at ${config.email.supportEmailPlain}.</p>
 				<p>Thanks!</p>
 				<p>Notice: Please do not reply directly to this email. This email is not monitored for new messages.</p>
 		`;
@@ -191,7 +191,7 @@ exports.tryItOut = (req, res) => {
 				Thanks for trying out my Email API service.
 				Here's the information you put into the form at austintheriot.com:
 				${messageList}
-				Notice: If you're interested in hiring me, please don't hesitate to contact me using my real contact form (https://austintheriot.com/contact).
+				Notice: If you're interested in hiring me, please don't hesitate to contact me using my real contact form (${config.email.contactForm}) or directly at ${config.email.supportEmailPlain}.
 				Thanks!
 				Notice: Please do not reply directly to this email. This email is not monitored for new messages.
 		`;
@@ -207,7 +207,6 @@ exports.tryItOut = (req, res) => {
 					)}, ${new Date().toLocaleTimeString()})`, // email subject
 					html: emailBody, // email content in HTML
 					text: emailBodyPlainText,
-					replyTo: req.body.email || req.body.Email || req.body.EMAIL, //allows replying directly to the email
 				};
 
 				//send the email
