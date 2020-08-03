@@ -62,6 +62,7 @@ const sendSupportEmail = (error, req) => {
 
 exports.contactForm = (req, res) => {
 	//first see if API key exists in database
+	console.log(req.body.Email, req.body.Name, req.body.Message);
 	return db
 		.collection('keys')
 		.doc(req.body._private.key)
@@ -99,14 +100,12 @@ exports.contactForm = (req, res) => {
 
 			//else if all is well:
 			else {
-				//generate message based on request body
-				//filter out private API data
-				let messageList = [...Object.keys(req.body)]
-					.filter((key) => !key.match(/_private/gi))
-					.map((key) => {
-						return `<p>${key}: ${req.body[key]}</p>`;
-					})
-					.join(' ');
+				//Limit this API end point to Name, Email, and Message alon
+				let messageList = `
+				<p>Name: ${req.body.Name}</p>
+				<p>Email: ${req.body.Email}</p>
+				<p>Message: ${req.body.Message}</p>
+				`;
 
 				//create email body based on information received from the database
 				//and information received from the website sending the request
@@ -120,7 +119,7 @@ exports.contactForm = (req, res) => {
 				<hr/>
 				<p>Notice: You may respond by replying directly to this email.</p>
 				<p>To opt out of future emails, please contact the developer of this service directly by emailing him at ${
-					config.email.supportEmail
+					config.email.supportEmailPlain
 				}</p>
 		`;
 
@@ -132,7 +131,7 @@ exports.contactForm = (req, res) => {
 				${messageList}
 				Notice: You may respond by replying directly to this email.
 				To opt out of future emails, please contact the developer of this service directly by emailing him at ${
-					config.email.supportEmail
+					config.email.supportEmailPlain
 				}
 		`;
 
