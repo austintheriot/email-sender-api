@@ -89,15 +89,6 @@ exports.contactForm = (req, res) => {
 				return res.status(500).send(error);
 			}
 
-			//must match correct origin name
-			else if (req.hostname !== database.hostname) {
-				let error = {
-					error: `${req.hostname} is not an authorized domain.`,
-				};
-				sendSupportEmail(error, req);
-				return res.status(500).send(error);
-			}
-
 			//else if all is well:
 			else {
 				//Limit this API end point to Name, Email, and Message alon
@@ -201,25 +192,15 @@ exports.tryItOut = (req, res) => {
 				return res.status(500).send(error);
 			}
 
-			//must match correct origin name
-			else if (req.hostname !== database.hostname) {
-				let error = {
-					error: `${req.hostname} is not an authorized domain.`,
-				};
-				sendSupportEmail(error, req);
-				return res.status(500).send(error);
-			}
-
 			//else if all is well:
 			else {
 				//generate message based on request body
 				//filter out private API data
-				let messageList = [...Object.keys(req.body)]
-					.filter((key) => !key.match(/_private/gi))
-					.map((key) => {
-						return `<p>${key}: ${req.body[key]}</p>`;
-					})
-					.join(' ');
+				let messageList = `
+				<p>Name: ${req.body.Name}</p>
+				<p>Email: ${req.body.Email}</p>
+				<p>Message: ${req.body.Message}</p>
+				`;
 
 				//create email body based on information received from the database
 				//and information received from the website sending the request

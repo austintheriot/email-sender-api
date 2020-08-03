@@ -15,6 +15,10 @@ app.post(
 	[body('Email').escape(), body('Name').escape(), body('Message').escape()],
 	contactForm
 );
-app.post('/tryItOut', tryItOut);
+app.post(
+	'/tryItOut',
+	[body('Email').escape(), body('Name').escape(), body('Message').escape()],
+	tryItOut
+);
 
 exports.sendEmail = functions.https.onRequest(app);
