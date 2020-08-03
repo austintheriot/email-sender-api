@@ -62,7 +62,6 @@ const sendSupportEmail = (error, req) => {
 
 exports.contactForm = (req, res) => {
 	//first see if API key exists in database
-	console.log(req.body.Email, req.body.Name, req.body.Message);
 	return db
 		.collection('keys')
 		.doc(req.body._private.key)
@@ -103,7 +102,7 @@ exports.contactForm = (req, res) => {
 				let emailBody = `
 				<p>Hi ${database.name || 'there'},</p>
 				<p>You have received a new form submission for ${
-					database.hostname || 'your website'
+					database.website || 'your website'
 				}:</p>
 				${messageList}
 				<br/>
@@ -117,7 +116,7 @@ exports.contactForm = (req, res) => {
 				let emailBodyPlainText = `
 				Hi ${database.name || 'there'},
 				You have received a new form submission for ${
-					database.hostname || 'your website'
+					database.website || 'your website'
 				}:
 				${messageList}
 				Notice: You may respond by replying directly to this email.
