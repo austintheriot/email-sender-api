@@ -8,22 +8,8 @@ const { body } = require('express-validator');
 
 const cors = require('cors');
 const app = express();
-const { originsList } = require('./config');
 
-app.use(
-	cors({
-		origin: (origin, callback) => {
-			console.log({ origin });
-			//allow requests with no origin
-			if (!origin) return callback(null, true);
-			if (originsList.indexOf(origin) === -1) {
-				let message = 'Unauthorized origin.';
-				return callback(new Error(message), false);
-			}
-			return callback(null, true);
-		},
-	})
-);
+app.use(cors({ origin: true }));
 
 app.post(
 	'/contactForm',
