@@ -69,7 +69,36 @@ exports.contactForm = (req, res) => {
 		.then((doc) => {
 			//retrieve data from returned document (name, website, redirect, etc.)
 			let database = doc.data();
-			if (doc.exists && database.type === 'contactForm') {
+
+			//must match a key in the database
+			if (!doc.exists) {
+				let error = {
+					error: 'Invalid PI key.',
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//must match correct TYPE of key (contactForm, tryItOut, etc.)
+			else if (database.type !== 'contactForm') {
+				let error = {
+					error: 'Unauthorized API key',
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//must match correct origin name
+			else if (req.hostname !== database.hostname) {
+				let error = {
+					error: `${req.hostname} is not an authorized domain.`,
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//else if all is well:
+			else {
 				//generate message based on request body
 				//filter out private API data
 				let messageList = [...Object.keys(req.body)]
@@ -84,7 +113,7 @@ exports.contactForm = (req, res) => {
 				let emailBody = `
 				<p>Hi ${database.name || 'there'},</p>
 				<p>You have received a new form submission for ${
-					database.website || 'your website'
+					database.hostname || 'your website'
 				}:</p>
 				${messageList}
 				<br/>
@@ -98,7 +127,7 @@ exports.contactForm = (req, res) => {
 				let emailBodyPlainText = `
 				Hi ${database.name || 'there'},
 				You have received a new form submission for ${
-					database.website || 'your website'
+					database.hostname || 'your website'
 				}:
 				${messageList}
 				Notice: You may respond by replying directly to this email.
@@ -111,7 +140,7 @@ exports.contactForm = (req, res) => {
 				//as well as its subject and contents
 				const mailOptions = {
 					from: config.email.fromEmail, // Example: Jane Doe <janedoe@gmail.com>
-					to: database.destination,
+					to: database.toEmail,
 					bcc: config.email.fromEmail, // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString(
 						'en-US'
@@ -126,20 +155,12 @@ exports.contactForm = (req, res) => {
 					if (error) {
 						sendSupportEmail(error, req);
 						//if failure to send mail
-						return res.status(500).send(error.toString());
+						return res.status(500).send(error);
 					}
-					data = JSON.stringify(data);
 					//if success to send mail
 					return res.status(200).send({
 						message: `Your form was successfully submitted!`,
 					});
-				});
-			} else {
-				sendSupportEmail({ error: 'Bad request. Incorrect key' }, req);
-				//bad request (wrong key)
-				return res.status(400).send({
-					error: `Bad Request.`,
-					message: `Please use the correct key to send an email through this service.`,
 				});
 			}
 		})
@@ -162,7 +183,36 @@ exports.tryItOut = (req, res) => {
 		.then((doc) => {
 			//retrieve data from returned document (name, website, redirect, etc.)
 			let database = doc.data();
-			if (doc.exists && database.type === 'tryItOut') {
+
+			//must match a key in the database
+			if (!doc.exists) {
+				let error = {
+					error: 'Invalid API key.',
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//must match correct TYPE of key (contactForm, tryItOut, etc.)
+			else if (database.type !== 'tryItOut') {
+				let error = {
+					error: 'Unauthorized API key.',
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//must match correct origin name
+			else if (req.hostname !== database.hostname) {
+				let error = {
+					error: `${req.hostname} is not an authorized domain.`,
+				};
+				sendSupportEmail(error, req);
+				return res.status(500).send(error);
+			}
+
+			//else if all is well:
+			else {
 				//generate message based on request body
 				//filter out private API data
 				let messageList = [...Object.keys(req.body)]
@@ -210,24 +260,16 @@ exports.tryItOut = (req, res) => {
 				};
 
 				//send the email
-				transporter.sendMail(mailOptions, (error, data) => {
+				transporter.sendMail(mailOptions, (error) => {
 					if (error) {
 						sendSupportEmail(error, req);
 						//if failure to send mail
-						return res.status(500).send(error.toString());
+						return res.status(500).send(error);
 					}
-					data = JSON.stringify(data);
 					//if success to send mail
 					return res.status(200).send({
 						message: `Your form was successfully submitted!`,
 					});
-				});
-			} else {
-				sendSupportEmail({ error: 'Bad Request: Incorrect key' }, req);
-				//bad request (wrong key)
-				return res.status(400).send({
-					error: `Bad Request.`,
-					message: `Please use the correct key to send an email through this service.`,
 				});
 			}
 		})
