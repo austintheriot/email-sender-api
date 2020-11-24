@@ -48,7 +48,7 @@ const sendSupportEmail = (error, req) => {
 			bcc: config.email.fromEmail, // foo@gmail.com, bar@gmail.com
 			subject: `Error Reported for Email API (${new Date().toLocaleDateString(
 				'en-US'
-			)}, ${new Date().toLocaleTimeString()})`, // email subject
+			)}, ${new Date().toLocaleTimeString('en-US')})`, // email subject
 			html: emailHtml, // email content in HTML
 			text: emailText,
 		};
