@@ -133,7 +133,7 @@ exports.contactForm = (req, res) => {
 					bcc: config.email.fromEmail, // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString(
 						'en-US'
-					)}, ${new Date().toLocaleTimeString()})`, // email subject
+					)}, ${new Date().toLocaleTimeString('en-US')})`, // email subject
 					html: emailBody, // email content in HTML
 					text: emailBodyPlainText,
 					replyTo: req.body.email || req.body.Email || req.body.EMAIL, //allows replying directly to the email
@@ -233,7 +233,7 @@ exports.tryItOut = (req, res) => {
 					bcc: [config.email.fromEmail, config.email.supportEmail].join(', '), // foo@gmail.com, bar@gmail.com
 					subject: `New Form Submission (${new Date().toLocaleDateString(
 						'en-US'
-					)}, ${new Date().toLocaleTimeString()})`, // email subject
+					)}, ${new Date().toLocaleTimeString('en-US')})`, // email subject
 					html: emailBody, // email content in HTML
 					text: emailBodyPlainText,
 				};
