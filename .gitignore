@@ -1,17 +1,3 @@
-# Compiled JavaScript files
-**/*.js
-**/*.js.map
-
-# Except the ESLint config file
-!.eslintrc.js
-
-# TypeScript v1 declaration files
-typings/
-
-# Node.js dependency directory
-node_modules/
-
-
 # Logs
 logs
 *.log
@@ -78,8 +64,3 @@ node_modules/
 
 # dotenv environment variables file
 .env
-
-config.ts
-
-**/*.log
-
